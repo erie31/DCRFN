@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Botín Medieval</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Metamorphous&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c1810">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1 class="medieval-title">CÁLCULO DE BOTÍN</h1>
+            <p class="subtitle">Crónicas de RFN</p>
+        </header>
+
+        <main>
+            <section class="enemy-selection parchment">
+                <label for="enemy-select">Selecciona al Enemigo Derrotado:</label>
+                <select id="enemy-select">
+                    <option value="" disabled selected>-- Elige un oponente --</option>
+                </select>
+                <div id="enemy-stats" class="stats-box hidden">
+                    <!-- Stats populated by JS -->
+                </div>
+            </section>
+
+            <button id="calculate-btn" class="medieval-btn hidden">
+                <span class="btn-text">¡RECLAMAR BOTÍN!</span>
+                <span class="btn-shine"></span>
+            </button>
+
+            <section id="results" class="results-container hidden">
+                <div class="dice-roll-area">
+                    <div id="dice-container" class="dice">?</div>
+                    <p id="roll-message">Tirando dados de suerte...</p>
+                </div>
+
+                <div class="loot-display">
+                    <article class="loot-card exp-card">
+                        <h3>Experiencia Ganada</h3>
+                        <div id="exp-value" class="loot-value">0 XP</div>
+                    </article>
+
+                    <article class="loot-card gold-card">
+                        <h3>Oro Encontrado</h3>
+                        <div id="gold-value" class="loot-value">0 PO</div>
+                    </article>
+
+                    <article class="loot-card equip-card" id="equip-card">
+                        <h3>Equipamiento</h3>
+                        <div id="equip-value" class="loot-value">Nada...</div>
+                    </article>
+
+                    <article class="loot-card misc-card">
+                        <h3>Objetos Misceláneos</h3>
+                        <div id="misc-list" class="misc-list">
+                            <!-- List of items -->
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <button id="install-btn" class="footer-btn hidden">Instalar App</button>
+            <p>&copy; 2026 Rol for Newbies</p>
+        </footer>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
