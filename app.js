@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Roll logic
     calculateBtn.addEventListener('click', async () => {
         const enemyId = enemySelect.value;
+        const enemyCount = parseInt(document.getElementById('enemy-count').value) || 1;
         const enemy = ALL_DATA.enemies.find(en => en.id == enemyId);
 
         if (!enemy) return;
@@ -52,58 +53,88 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsArea.classList.remove('hidden');
         resultsArea.scrollIntoView({ behavior: 'smooth' });
 
-        // --- 1. EXP and Gold (Static/Simple Roll) ---
-        expDisplay.textContent = `${enemy.exp} XP`;
-        const gold = Math.floor(Math.random() * (enemy.gold.max - enemy.gold.min + 1)) + enemy.gold.min;
-        goldDisplay.textContent = `${gold} PO`;
+        // --- Reset display ---
+        let totalExp = 0;
+        let totalGold = 0;
+        let droppedEquipment = [];
+        let allMiscItems = [];
 
-        // --- 2. Equipment Roll (1d6, only on 6) ---
-        diceContainer.classList.add('rolling');
-        rollMessage.textContent = "Tirando Dado de Fortuna (1d6)...";
+        diceContainer.textContent = "...";
+        rollMessage.textContent = `Procesando combate contra ${enemyCount} enemigos...`;
+        miscList.innerHTML = "";
 
-        await new Promise(r => setTimeout(r, 1000));
+        // --- Calculation Loop ---
+        for (let i = 0; i < enemyCount; i++) {
+            // EXP
+            totalExp += enemy.exp;
 
-        const equipRoll = Math.floor(Math.random() * 6) + 1;
-        diceContainer.textContent = equipRoll;
-        diceContainer.classList.remove('rolling');
+            // Gold
+            const gold = Math.floor(Math.random() * (enemy.gold.max - enemy.gold.min + 1)) + enemy.gold.min;
+            totalGold += gold;
 
-        if (equipRoll === 6 && enemy.equipmentIds.length > 0) {
-            const randomEquipId = enemy.equipmentIds[Math.floor(Math.random() * enemy.equipmentIds.length)];
-            const item = ALL_DATA.equipment[randomEquipId];
-            if (item) {
-                equipDisplay.innerHTML = `<span style="color:#ffd700">${item.name}</span><br><small>${item.stat}</small>`;
-                equipCard.style.borderColor = "#ffd700";
-            } else {
-                equipDisplay.textContent = "Error al forjar...";
+            // Equipment Roll (1d6, only on 6)
+            const equipRoll = Math.floor(Math.random() * 6) + 1;
+            if (equipRoll === 6 && enemy.equipmentIds.length > 0) {
+                const randomEquipId = enemy.equipmentIds[Math.floor(Math.random() * enemy.equipmentIds.length)];
+                const item = ALL_DATA.equipment[randomEquipId];
+                if (item) droppedEquipment.push(item);
             }
+
+            // Misc Drops (100% chance, 1d3 items)
+            const miscCount = Math.floor(Math.random() * 3) + 1;
+            const availableMisc = [...enemy.miscIds];
+            for (let j = 0; j < miscCount; j++) {
+                if (availableMisc.length === 0) break;
+                const randomIndex = Math.floor(Math.random() * availableMisc.length);
+                const itemId = availableMisc.splice(randomIndex, 1)[0];
+                const item = ALL_DATA.miscItems[itemId];
+                if (item) allMiscItems.push(item);
+            }
+        }
+
+        // --- Visual Delay for "Dice Roll" ---
+        diceContainer.classList.add('rolling');
+        await new Promise(r => setTimeout(r, 1200));
+        diceContainer.classList.remove('rolling');
+        diceContainer.textContent = "⚔️";
+
+        // --- Update UI with aggregated results ---
+        expDisplay.textContent = `${totalExp} XP`;
+        goldDisplay.textContent = `${totalGold} PO`;
+
+        if (droppedEquipment.length > 0) {
+            equipDisplay.innerHTML = droppedEquipment.map(item =>
+                `<div style="margin-bottom:5px; border-bottom: 1px dashed rgba(255,215,0,0.2)">
+                    <span style="color:#ffd700">${item.name}</span><br>
+                    <small>${item.stat}</small>
+                </div>`
+            ).join('');
+            equipCard.style.borderColor = "#ffd700";
         } else {
             equipDisplay.textContent = "Nada esta vez";
             equipCard.style.borderColor = "rgba(255,255,255,0.2)";
         }
 
-        // --- 3. Misc Drops (100% chance, 1d3 items) ---
-        rollMessage.textContent = "Buscando en los bolsillos del enemigo...";
-        miscList.innerHTML = "";
+        if (allMiscItems.length > 0) {
+            // Group duplicate items
+            const counts = {};
+            allMiscItems.forEach(item => {
+                counts[item.name] = (counts[item.name] || 0) + 1;
+            });
 
-        const miscCount = Math.floor(Math.random() * 3) + 1;
-        const availableMisc = [...enemy.miscIds];
-
-        for (let i = 0; i < miscCount; i++) {
-            if (availableMisc.length === 0) break;
-            const randomIndex = Math.floor(Math.random() * availableMisc.length);
-            const itemId = availableMisc.splice(randomIndex, 1)[0];
-            const item = ALL_DATA.miscItems[itemId];
-
-            if (item) {
+            Object.keys(counts).forEach(name => {
+                const item = allMiscItems.find(it => it.name === name);
                 const itemDiv = document.createElement('div');
                 itemDiv.className = "misc-item";
-                itemDiv.innerHTML = `<strong>${item.name}</strong> - ${item.desc}`;
+                itemDiv.innerHTML = `<strong>${counts[name]}x ${item.name}</strong> - ${item.desc}`;
                 miscList.appendChild(itemDiv);
-            }
+            });
+        } else {
+            miscList.innerHTML = "<em>Los bolsillos están vacíos...</em>";
         }
 
         calculateBtn.disabled = false;
-        rollMessage.textContent = "¡Botín reclamado!";
+        rollMessage.textContent = `¡Batalla finalizada! (${enemyCount} oponentes)`;
     });
 
     // PWA Install Logic

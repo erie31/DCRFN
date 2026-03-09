@@ -6,7 +6,7 @@
     --color-gold-dark: #b8860b;
     --color-text: #2c1810;
     --color-accent: #8b0000;
-    --shadow-soft: 0 4px 15px rgba(0,0,0,0.5);
+    --shadow-soft: 0 4px 15px rgba(0, 0, 0, 0.5);
     --border-medieval: 3px solid #4a2c1d;
 }
 
@@ -37,8 +37,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 header {
@@ -68,7 +75,7 @@ header {
     color: var(--color-text);
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 50px rgba(139, 69, 19, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 0 50px rgba(139, 69, 19, 0.2);
     border: var(--border-medieval);
     position: relative;
     margin-bottom: 25px;
@@ -77,7 +84,10 @@ header {
 .parchment::before {
     content: '';
     position: absolute;
-    top: -5px; bottom: -5px; left: -5px; right: -5px;
+    top: -5px;
+    bottom: -5px;
+    left: -5px;
+    right: -5px;
     border: 1px solid var(--color-gold-dark);
     pointer-events: none;
     opacity: 0.5;
@@ -105,7 +115,7 @@ select {
 .stats-box {
     margin-top: 20px;
     padding: 15px;
-    background: rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
     text-align: left;
     font-size: 0.95rem;
@@ -133,7 +143,7 @@ select {
     font-size: 1.4rem;
     cursor: pointer;
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     overflow: hidden;
     margin: 20px 0;
@@ -141,7 +151,7 @@ select {
 
 .medieval-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
 }
 
 .medieval-btn:active {
@@ -150,9 +160,11 @@ select {
 
 .btn-shine {
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transition: all 0.6s;
 }
 
@@ -166,8 +178,15 @@ select {
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dice-roll-area {
@@ -186,7 +205,7 @@ select {
     font-size: 2.5rem;
     font-weight: 800;
     border-radius: 12px;
-    box-shadow: 4px 4px 0px #ccc, 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 4px 4px 0px #ccc, 0 5px 15px rgba(0, 0, 0, 0.3);
     border: 2px solid #999;
 }
 
@@ -195,11 +214,25 @@ select {
 }
 
 @keyframes shake {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(10deg); }
-    50% { transform: rotate(0deg); }
-    75% { transform: rotate(-10deg); }
-    100% { transform: rotate(0deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(10deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    75% {
+        transform: rotate(-10deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
 }
 
 .loot-display {
@@ -226,7 +259,7 @@ select {
     color: var(--color-gold-dark);
     font-size: 1.1rem;
     margin-bottom: 10px;
-    border-bottom: 1px solid rgba(255,215,0,0.3);
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .loot-value {
@@ -234,9 +267,17 @@ select {
     font-weight: 600;
 }
 
-.exp-card .loot-value { color: #4caf50; }
-.gold-card .loot-value { color: var(--color-gold); }
-.equip-card .loot-value { color: #2196f3; }
+.exp-card .loot-value {
+    color: #4caf50;
+}
+
+.gold-card .loot-value {
+    color: var(--color-gold);
+}
+
+.equip-card .loot-value {
+    color: #2196f3;
+}
 
 .misc-list {
     text-align: left;
@@ -256,12 +297,14 @@ select {
     color: var(--color-gold);
 }
 
-.hidden { display: none !important; }
+.hidden {
+    display: none !important;
+}
 
 footer {
     margin-top: 50px;
     padding: 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     font-size: 0.8rem;
     color: var(--color-parchment-dark);
 }
@@ -276,7 +319,30 @@ footer {
     margin-bottom: 10px;
 }
 
+.quantity-control input {
+    width: 60px;
+    padding: 10px;
+    font-size: 1.1rem;
+    border: 2px solid var(--color-parchment-dark);
+    background: #fff;
+    border-radius: 4px;
+    text-align: center;
+    color: var(--color-text);
+    font-family: 'Outfit', sans-serif;
+}
+
+.quantity-control label {
+    display: inline-block;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
 @media (max-width: 480px) {
-    .medieval-title { font-size: 1.8rem; }
-    .loot-display { grid-template-columns: 1fr; }
+    .medieval-title {
+        font-size: 1.8rem;
+    }
+
+    .loot-display {
+        grid-template-columns: 1fr;
+    }
 }
