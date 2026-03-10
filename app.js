@@ -21,6 +21,77 @@ document.addEventListener('DOMContentLoaded', () => {
         enemySelect.appendChild(option);
     });
 
+    // --- Group Management ---
+    let encounter = [];
+    const addToGroupBtn = document.getElementById('add-to-group-btn');
+    const groupActions = document.getElementById('group-actions');
+    const encounterList = document.getElementById('encounter-list');
+    const groupItemsContainer = document.getElementById('group-items');
+    const totalMonstersSpan = document.getElementById('total-monsters');
+    const clearGroupBtn = document.getElementById('clear-group-btn');
+
+    const updateEncounterUI = () => {
+        groupItemsContainer.innerHTML = "";
+        let totalCount = 0;
+
+        encounter.forEach((entry, index) => {
+            totalCount += entry.count;
+            const itemDiv = document.createElement('div');
+            itemDiv.className = "group-item";
+            itemDiv.innerHTML = `
+                <div class="group-item-info">
+                    <b>${entry.count}x</b> ${entry.enemy.name} <small>(Lvl ${entry.enemy.level})</small>
+                </div>
+                <button class="remove-item-btn" data-index="${index}">&times;</button>
+            `;
+            groupItemsContainer.appendChild(itemDiv);
+        });
+
+        totalMonstersSpan.textContent = totalCount;
+
+        if (encounter.length > 0) {
+            encounterList.classList.remove('hidden');
+            calculateBtn.classList.remove('hidden');
+        } else {
+            encounterList.classList.add('hidden');
+            calculateBtn.classList.add('hidden');
+        }
+
+        // Add remove listeners
+        document.querySelectorAll('.remove-item-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                const idx = parseInt(e.target.dataset.index);
+                encounter.splice(idx, 1);
+                updateEncounterUI();
+            };
+        });
+    };
+
+    addToGroupBtn.addEventListener('click', () => {
+        const enemyId = enemySelect.value;
+        const enemyCount = parseInt(document.getElementById('enemy-count').value) || 1;
+        const enemy = ALL_DATA.enemies.find(en => en.id == enemyId);
+
+        if (!enemy) return;
+
+        // Check total limit (optional but good practice)
+        const currentTotal = encounter.reduce((sum, entry) => sum + entry.count, 0);
+        if (currentTotal + enemyCount > 20) {
+            alert("¡Demasiados enemigos para un solo encuentro! (Máx 20)");
+            return;
+        }
+
+        encounter.push({ enemy, count: enemyCount });
+        updateEncounterUI();
+        resultsArea.classList.add('hidden');
+    });
+
+    clearGroupBtn.addEventListener('click', () => {
+        encounter = [];
+        updateEncounterUI();
+        resultsArea.classList.add('hidden');
+    });
+
     // Handle selection
     enemySelect.addEventListener('change', (e) => {
         const enemy = ALL_DATA.enemies.find(en => en.id == e.target.value);
@@ -35,18 +106,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="margin-top:10px; font-style: italic;">"${enemy.ability}"</div>
             `;
             enemyStats.classList.remove('hidden');
-            calculateBtn.classList.remove('hidden');
+            groupActions.classList.remove('hidden');
+            // We don't show calculate button immediately anymore, only after adding to group
             resultsArea.classList.add('hidden');
         }
     });
 
     // Roll logic
     calculateBtn.addEventListener('click', async () => {
-        const enemyId = enemySelect.value;
-        const enemyCount = parseInt(document.getElementById('enemy-count').value) || 1;
-        const enemy = ALL_DATA.enemies.find(en => en.id == enemyId);
-
-        if (!enemy) return;
+        if (encounter.length === 0) return;
 
         // Visual effects
         calculateBtn.disabled = true;
@@ -60,35 +128,39 @@ document.addEventListener('DOMContentLoaded', () => {
         let allMiscItems = [];
 
         diceContainer.textContent = "...";
-        rollMessage.textContent = `Procesando combate contra ${enemyCount} enemigos...`;
+        rollMessage.textContent = `Procesando batalla contra el grupo...`;
         miscList.innerHTML = "";
 
-        // --- Calculation Loop ---
-        for (let i = 0; i < enemyCount; i++) {
-            // EXP
-            totalExp += enemy.exp;
+        // --- Calculation Loop through the entire encounter ---
+        for (const entry of encounter) {
+            const { enemy, count } = entry;
 
-            // Gold
-            const gold = Math.floor(Math.random() * (enemy.gold.max - enemy.gold.min + 1)) + enemy.gold.min;
-            totalGold += gold;
+            for (let i = 0; i < count; i++) {
+                // EXP
+                totalExp += enemy.exp;
 
-            // Equipment Roll (1d6, only on 6)
-            const equipRoll = Math.floor(Math.random() * 6) + 1;
-            if (equipRoll === 6 && enemy.equipmentIds.length > 0) {
-                const randomEquipId = enemy.equipmentIds[Math.floor(Math.random() * enemy.equipmentIds.length)];
-                const item = ALL_DATA.equipment[randomEquipId];
-                if (item) droppedEquipment.push(item);
-            }
+                // Gold
+                const gold = Math.floor(Math.random() * (enemy.gold.max - enemy.gold.min + 1)) + enemy.gold.min;
+                totalGold += gold;
 
-            // Misc Drops (100% chance, 1d3 items)
-            const miscCount = Math.floor(Math.random() * 3) + 1;
-            const availableMisc = [...enemy.miscIds];
-            for (let j = 0; j < miscCount; j++) {
-                if (availableMisc.length === 0) break;
-                const randomIndex = Math.floor(Math.random() * availableMisc.length);
-                const itemId = availableMisc.splice(randomIndex, 1)[0];
-                const item = ALL_DATA.miscItems[itemId];
-                if (item) allMiscItems.push(item);
+                // Equipment Roll (1d6, only on 6)
+                const equipRoll = Math.floor(Math.random() * 6) + 1;
+                if (equipRoll === 6 && enemy.equipmentIds.length > 0) {
+                    const randomEquipId = enemy.equipmentIds[Math.floor(Math.random() * enemy.equipmentIds.length)];
+                    const item = ALL_DATA.equipment[randomEquipId];
+                    if (item) droppedEquipment.push(item);
+                }
+
+                // Misc Drops (100% chance, 1d3 items)
+                const miscCount = Math.floor(Math.random() * 3) + 1;
+                const availableMisc = [...enemy.miscIds];
+                for (let j = 0; j < miscCount; j++) {
+                    if (availableMisc.length === 0) break;
+                    const randomIndex = Math.floor(Math.random() * availableMisc.length);
+                    const itemId = availableMisc.splice(randomIndex, 1)[0];
+                    const item = ALL_DATA.miscItems[itemId];
+                    if (item) allMiscItems.push(item);
+                }
             }
         }
 
@@ -134,7 +206,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         calculateBtn.disabled = false;
-        rollMessage.textContent = `¡Batalla finalizada! (${enemyCount} oponentes)`;
+        const totalMonsters = encounter.reduce((sum, entry) => sum + entry.count, 0);
+        rollMessage.textContent = `¡Batalla finalizada! (${totalMonsters} oponentes)`;
     });
 
     // PWA Install Logic

@@ -35,6 +35,24 @@
                 <div id="enemy-stats" class="stats-box hidden">
                     <!-- Stats populated by JS -->
                 </div>
+                <div class="group-actions hidden" id="group-actions">
+                    <button id="add-to-group-btn" class="medieval-btn secondary">
+                        <span>AGREGAR AL GRUPO</span>
+                    </button>
+                </div>
+            </section>
+
+            <section id="encounter-list" class="encounter-container parchment hidden">
+                <div class="encounter-header">
+                    <h2>Encuentro Actual</h2>
+                    <button id="clear-group-btn" class="clear-btn">Limpiar</button>
+                </div>
+                <div id="group-items" class="group-items">
+                    <!-- Selected monsters will appear here -->
+                </div>
+                <div class="total-monsters-count">
+                    Total: <span id="total-monsters">0</span>/10
+                </div>
             </section>
 
             <button id="calculate-btn" class="medieval-btn hidden">
