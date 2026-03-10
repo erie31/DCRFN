@@ -5,6 +5,7 @@ const ASSETS = [
     'app.js',
     'data.js',
     'manifest.json',
+    'icon.png',
     'https://fonts.googleapis.com/css2?family=MedievalSharp&family=Metamorphous&family=Outfit:wght@300;400;600&display=swap',
     'https://www.transparenttextures.com/patterns/dark-leather.png',
     'https://www.transparenttextures.com/patterns/textured-paper.png'
