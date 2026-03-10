@@ -54,7 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
             calculateBtn.classList.remove('hidden');
         } else {
             encounterList.classList.add('hidden');
-            calculateBtn.classList.add('hidden');
+            // If group is empty, only hide calculate button if no enemy is currently selected in the dropdown
+            if (!enemySelect.value) {
+                calculateBtn.classList.add('hidden');
+            }
         }
 
         // Add remove listeners
@@ -107,14 +110,27 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             enemyStats.classList.remove('hidden');
             groupActions.classList.remove('hidden');
-            // We don't show calculate button immediately anymore, only after adding to group
+            calculateBtn.classList.remove('hidden');
             resultsArea.classList.add('hidden');
         }
     });
 
     // Roll logic
     calculateBtn.addEventListener('click', async () => {
-        if (encounter.length === 0) return;
+        let currentEncounter = [...encounter];
+
+        // If encounter is empty but an enemy is selected, use that single selection
+        if (currentEncounter.length === 0) {
+            const enemyId = enemySelect.value;
+            const enemyCount = parseInt(document.getElementById('enemy-count').value) || 1;
+            const enemy = ALL_DATA.enemies.find(en => en.id == enemyId);
+
+            if (enemy) {
+                currentEncounter.push({ enemy, count: enemyCount });
+            }
+        }
+
+        if (currentEncounter.length === 0) return;
 
         // Visual effects
         calculateBtn.disabled = true;
@@ -128,11 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let allMiscItems = [];
 
         diceContainer.textContent = "...";
-        rollMessage.textContent = `Procesando batalla contra el grupo...`;
+        rollMessage.textContent = `Procesando batalla...`;
         miscList.innerHTML = "";
 
-        // --- Calculation Loop through the entire encounter ---
-        for (const entry of encounter) {
+        // --- Calculation Loop through the encounter ---
+        for (const entry of currentEncounter) {
             const { enemy, count } = entry;
 
             for (let i = 0; i < count; i++) {
@@ -206,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         calculateBtn.disabled = false;
-        const totalMonsters = encounter.reduce((sum, entry) => sum + entry.count, 0);
+        const totalMonsters = currentEncounter.reduce((sum, entry) => sum + entry.count, 0);
         rollMessage.textContent = `¡Batalla finalizada! (${totalMonsters} oponentes)`;
     });
 
